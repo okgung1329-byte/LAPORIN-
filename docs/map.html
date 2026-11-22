@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Peta Laporan - LAPORIN</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,6 +13,27 @@
     <!-- Library Leaflet (Peta) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        /* Tombol Melayang (FAB) untuk Buat Laporan */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            background-color: #2563eb;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            font-family: 'Inter', sans-serif;
+        }
+        .fab:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
 </head>
 <body>
 
@@ -22,14 +43,17 @@
             <a href="index.html" class="logo">LAPOR<span class="text-primary">IN</span></a>
             <nav class="nav-links">
                 <a href="index.html" class="nav-link">Beranda</a>
-                <a href="map.html" class="nav-link" style="color: var(--primary-color); font-weight: 700;">Peta</a>
+                <a href="map.html" class="nav-link" style="color: var(--primary-color, #2563eb); font-weight: 700;">Peta</a>
+                <a href="my-reports.html" class="nav-link">Laporan Saya</a>
+                <a href="index.html" onclick="localStorage.removeItem('token')" class="nav-link" style="color: red;">Logout</a>
             </nav>
         </div>
     </header>
 
     <!-- AREA PETA -->
     <main class="map-wrapper">
-        <div id="map"></div>
+        <div id="map" style="height: calc(100vh - 60px); width: 100%;"></div>
+        <a href="create_report.html" class="fab">+ Buat Laporan</a>
     </main>
 
     <!-- SCRIPT UNTUK PETA -->
@@ -59,7 +83,7 @@
                         
                         // Buat pin (marker) di peta
                         var marker = L.marker([laporan.latitude, laporan.longitude]).addTo(map);
-                        
+
                         // Buat konten HTML untuk popup (tampilan saat pin diklik)
                         var popupContent = `
                             <div style="font-family: 'Inter', sans-serif; min-width: 200px;">
@@ -74,7 +98,7 @@
                                 </div>
                             </div>
                         `;
-                        
+
                         // Hubungkan konten ke pin
                         marker.bindPopup(popupContent);
                     }
@@ -82,7 +106,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Gagal memuat data peta. Pastikan server backend (Termux) sedang berjalan.');
+                alert('Gagal memuat data peta dari server.');
             });
     </script>
 </body>
