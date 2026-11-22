@@ -44,7 +44,7 @@
         }).addTo(map);
 
         // 3. Mengambil data laporan dari Backend (FastAPI)
-        fetch('http://localhost:8000/reports')
+        fetch('https://laporin-production-7ee5268f.up.railway.app/reports')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Gagal mengambil data dari server');

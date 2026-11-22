@@ -120,7 +120,7 @@
             const reportsList = document.getElementById('adminReportsList');
             
             try {
-                const response = await fetch('http://localhost:8000/reports', {
+                const response = await fetch('https://laporin-production-7ee5268f.up.railway.app/reports', {
                     method: 'GET'
                 });
 
@@ -179,7 +179,7 @@
             const newStatus = document.getElementById(`status-${reportId}`).value;
             
             try {
-                const response = await fetch(`http://localhost:8000/reports/${reportId}/status`, {
+                const response = await fetch(`https://laporin-production-7ee5268f.up.railway.app/reports/${reportId}/status`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

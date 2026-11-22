@@ -84,7 +84,7 @@
             const reportsList = document.getElementById('reportsList');
             
             try {
-                const response = await fetch('http://localhost:8000/my-reports', {
+                const response = await fetch('https://laporin-production-7ee5268f.up.railway.app/my-reports', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`
