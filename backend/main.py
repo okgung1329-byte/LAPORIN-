@@ -131,7 +131,7 @@ def create_report(
             shutil.copyfileobj(foto.file, buffer)
             
         # URL yang akan disimpan di database
-        foto_url = f"http://localhost:8000/uploads/{file_name}"
+        foto_url = f"/uploads/{file_name}"
 
     new_report = models.Report(
         judul=judul,
