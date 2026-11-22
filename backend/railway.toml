@@ -1,0 +1,2 @@
+[[volumes]]
+mountPath = "/app/uploads"
