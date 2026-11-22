@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk - LAPORIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+
+    <header class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">LAPOR<span class="text-primary">IN</span></a>
+        </div>
+    </header>
+
+    <main class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Selamat Datang Kembali</h1>
+                <p>Silakan masuk untuk melanjutkan pelaporan Anda.</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Alamat Email</label>
+                    <input type="email" id="email" name="email" placeholder="nama@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Kata Sandi</label>
+                    <input type="password" id="password" name="password" placeholder="Masukkan kata sandi" required>
+                </div>
+
+                <p id="pesanError" style="color: red; font-size: 0.9rem; display: none;"></p>
+
+                <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Belum punya akun? <a href="register.html" class="text-primary">Daftar di sini</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const pesanError = document.getElementById('pesanError');
+
+            const formData = new URLSearchParams();
+            formData.append('username', email); 
+            formData.append('password', password);
+
+            try {
+                const response = await fetch('https://laporin-production-7ee5268f.up.railway.app/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Simpan token ke localStorage
+                    localStorage.setItem('access_token', data.access_token);
+                    
+                    // Simpan status admin (kita decode payload token di sisi frontend)
+                    // Karena token JWT terdiri dari 3 bagian (header.payload.signature), kita ambil bagian tengahnya (payload)
+                    const payload = JSON.parse(atob(data.access_token.split('.')[1]));
+                    localStorage.setItem('is_admin', payload.is_admin); // Menyimpan true atau false
+
+                    alert('Login Berhasil!');
+                    // Jika admin, arahkan ke dashboard admin (nanti kita buat), jika tidak ke peta
+                    if (payload.is_admin) {
+                        window.location.href = 'admin.html'; 
+                    } else {
+                        window.location.href = 'map.html'; 
+                    }
+                } else {
+                    pesanError.style.display = 'block';
+                    pesanError.innerText = data.detail || 'Email atau password salah';
+                }
+            } catch (error) {
+                pesanError.style.display = 'block';
+                pesanError.innerText = 'Gagal terhubung ke server. Pastikan Termux menyala.';
+            }
+        });
+    </script>
+</body>
+</html> 
