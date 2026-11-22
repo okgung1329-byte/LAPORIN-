@@ -1,0 +1,21 @@
+# Folder Virtual Environment
+venv/
+venv-laporin/
+
+# File Python Cache
+__pycache__/
+*.pyc
+
+# File Database (Agar tidak menimpa database server nanti)
+*.db
+*.sqlite3
+
+# File Rahasia
+.env
+
+# Folder Uploads (File gambar dari user)
+backend/uploads/
+
+# File Sistem
+.DS_Store
+Thumbs.db

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Peta Laporan - LAPORIN</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Library Leaflet (Peta) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">LAPOR<span class="text-primary">IN</span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Beranda</a>
+                <a href="map.html" class="nav-link" style="color: var(--primary-color); font-weight: 700;">Peta</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- AREA PETA -->
+    <main class="map-wrapper">
+        <div id="map"></div>
+    </main>
+
+    <!-- SCRIPT UNTUK PETA -->
+    <script>
+        // 1. Inisialisasi peta
+        var map = L.map('map').setView([-2.548926, 118.0148634], 5);
+
+        // 2. Tambahkan gambar peta dari OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 3. Mengambil data laporan dari Backend (FastAPI)
+        fetch('http://localhost:8000/reports')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil data dari server');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Looping setiap laporan yang didapat dari database
+                data.forEach(laporan => {
+                    // Pastikan laporan punya koordinat sebelum ditaruh di peta
+                    if (laporan.latitude && laporan.longitude) {
+                        
+                        // Buat pin (marker) di peta
+                        var marker = L.marker([laporan.latitude, laporan.longitude]).addTo(map);
+                        
+                        // Buat konten HTML untuk popup (tampilan saat pin diklik)
+                        var popupContent = `
+                            <div style="font-family: 'Inter', sans-serif; min-width: 200px;">
+                                <h3 style="margin-bottom: 5px; color: #1e293b; font-size: 1.1rem;">${laporan.judul}</h3>
+                                <p style="margin-bottom: 8px; font-size: 0.85rem; color: #64748b;">
+                                    <strong>Kategori:</strong> ${laporan.kategori}<br>
+                                    <strong>Lokasi:</strong> ${laporan.lokasi}
+                                </p>
+                                <p style="font-size: 0.85rem; color: #1e293b; margin-bottom: 8px;">${laporan.deskripsi}</p>
+                                <div style="background-color: #dbeafe; color: #2563eb; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; display: inline-block;">
+                                    Status: ${laporan.status}
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Hubungkan konten ke pin
+                        marker.bindPopup(popupContent);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal memuat data peta. Pastikan server backend (Termux) sedang berjalan.');
+            });
+    </script>
+</body>
+</html> 

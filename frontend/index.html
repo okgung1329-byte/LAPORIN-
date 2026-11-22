@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAPORIN - Platform Pelaporan Publik</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">LAPOR<span class="text-primary">IN</span></a>
+            <nav class="nav-links" id="navbarLinks">
+                <a href="index.html" class="nav-link" style="color: var(--primary-color); font-weight: 700;">Beranda</a>
+                <a href="map.html" class="nav-link">Peta</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <main class="hero">
+        <div class="container hero-content">
+            <span class="badge">Platform Pelaporan Masyarakat</span>
+            <h1 class="hero-title">Suarakan Keluhanmu,<br>Wujudkan Perubahan.</h1>
+            <p class="hero-description">
+                LAPORIN membantu Anda melaporkan permasalahan di lingkungan sekitar, fasilitas umum, dan infrastruktur secara mudah, transparan, dan terpantau.
+            </p>
+            
+            <!-- ID ini akan diubah oleh JavaScript -->
+            <div class="hero-actions" id="heroButtons">
+                <a href="create_report.html" class="btn btn-primary">Buat Laporan</a>
+                <a href="login.html" class="btn btn-outline">Masuk Akun</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Cek apakah ada token di localStorage
+        const token = localStorage.getItem('access_token');
+        
+        const heroButtons = document.getElementById('heroButtons');
+        const navbarLinks = document.getElementById('navbarLinks');
+
+        if (token) {
+            // JIKA SUDAH LOGIN: Ubah tombol di beranda
+            heroButtons.innerHTML = `
+                <a href="create_report.html" class="btn btn-primary">Buat Laporan Baru</a>
+                <a href="my-reports.html" class="btn btn-outline">Lihat Laporan Saya</a>
+            `;
+
+            // Tambahkan menu navigasi khusus untuk yang sudah login
+            navbarLinks.innerHTML = `
+                <a href="index.html" class="nav-link" style="color: var(--primary-color); font-weight: 700;">Beranda</a>
+                <a href="map.html" class="nav-link">Peta</a>
+                <a href="create_report.html" class="nav-link">Buat Laporan</a>
+                <a href="my-reports.html" class="nav-link">Laporan Saya</a>
+                <a href="#" class="nav-link" style="color: #dc2626; font-weight: 700;" onclick="logout()">Keluar</a>
+            `;
+        }
+
+        // Fungsi untuk logout (menghapus token dan kembali ke beranda)
+        function logout() {
+            // Konfirmasi sebelum keluar
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                localStorage.removeItem('access_token');
+                alert('Anda telah berhasil keluar.');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

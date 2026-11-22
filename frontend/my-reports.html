@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Saya - LAPORIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        .my-reports-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .report-item {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary-color);
+        }
+        .report-item h3 {
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        .report-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-menunggu { background-color: #fef3c7; color: #d97706; } /* Kuning */
+        .status-diproses { background-color: #dbeafe; color: #2563eb; } /* Biru */
+        .status-selesai { background-color: #dcfce7; color: #16a34a; } /* Hijau */
+        .status-ditolak { background-color: #fee2e2; color: #dc2626; } /* Merah */
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">LAPOR<span class="text-primary">IN</span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Beranda</a>
+                <a href="map.html" class="nav-link">Peta</a>
+                <a href="create_report.html" class="nav-link">Buat Laporan</a>
+                <a href="my-reports.html" class="nav-link" style="color: var(--primary-color); font-weight: 700;">Laporan Saya</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="my-reports-container">
+        <div style="margin-bottom: 30px;">
+            <h1 style="font-size: 1.8rem; color: var(--text-main);">Laporan Saya</h1>
+            <p style="color: var(--text-muted);">Daftar permasalahan yang telah Anda laporkan.</p>
+        </div>
+
+        <!-- Tempat menaruh daftar laporan -->
+        <div id="reportsList">
+            <p style="text-align: center; color: var(--text-muted);">Memuat data...</p>
+        </div>
+    </main>
+
+    <script>
+        // 1. Cek Token
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert('Anda harus login untuk melihat halaman ini!');
+            window.location.href = 'login.html';
+        }
+
+        // 2. Fungsi untuk mengambil data dari backend
+        async function fetchMyReports() {
+            const reportsList = document.getElementById('reportsList');
+            
+            try {
+                const response = await fetch('http://localhost:8000/my-reports', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    alert('Sesi Anda telah berakhir. Silakan login kembali.');
+                    localStorage.removeItem('access_token');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await response.json();
+
+                // Jika tidak ada laporan
+                if (data.length === 0) {
+                    reportsList.innerHTML = `
+                        <div style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+                            <p style="color: var(--text-muted); margin-bottom: 15px;">Anda belum pernah membuat laporan.</p>
+                            <a href="create_report.html" class="btn btn-primary">Buat Laporan Pertama</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Jika ada laporan, buat HTML-nya
+                let htmlContent = '';
+                data.forEach(laporan => {
+                    // Menentukan warna badge berdasarkan status
+                    let badgeClass = 'status-menunggu';
+                    if (laporan.status === 'Dalam proses' || laporan.status === 'Diterima') badgeClass = 'status-diproses';
+                    if (laporan.status === 'Selesai') badgeClass = 'status-selesai';
+                    if (laporan.status === 'Ditolak') badgeClass = 'status-ditolak';
+
+                    // Format tanggal
+                    const tanggal = new Date(laporan.created_at).toLocaleDateString('id-ID', {
+                        day: 'numeric', month: 'long', year: 'numeric'
+                    });
+
+                    htmlContent += `
+                        <div class="report-item">
+                            <h3>${laporan.judul}</h3>
+                            <p><strong>Kategori:</strong> ${laporan.kategori} | <strong>Lokasi:</strong> ${laporan.lokasi}</p>
+                            <p>${laporan.deskripsi}</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Dibuat: ${tanggal}</span>
+                                <span class="status-badge ${badgeClass}">${laporan.status}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                reportsList.innerHTML = htmlContent;
+
+            } catch (error) {
+                reportsList.innerHTML = `<p style="color: red; text-align: center;">Gagal memuat data. Pastikan server Termux menyala.</p>`;
+            }
+        }
+
+        // Panggil fungsi saat halaman dimuat
+        fetchMyReports();
+    </script>
+</body>
+</html> 
