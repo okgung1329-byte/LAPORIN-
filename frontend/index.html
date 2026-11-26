@@ -3,76 +3,658 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAPORIN - Platform Pelaporan Publik</title>
+    <title>LAPORIN - Platform Pelaporan Masyarakat</title>
     
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS Utama -->
     <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* CSS Khusus untuk Landing Page */
+        .hero {
+            padding: 80px 0 100px;
+            overflow: hidden;
+        }
+        
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 90%;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Visual Asimetris di Kanan */
+        .hero-visual {
+            position: relative;
+            height: 400px;
+        }
+
+        .visual-card {
+            position: absolute;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 20px;
+        }
+
+        .card-main {
+            width: 80%;
+            top: 20px;
+            right: 0;
+            z-index: 2;
+        }
+
+        .card-secondary {
+            width: 60%;
+            bottom: 20px;
+            left: 0;
+            z-index: 3;
+        }
+
+        .visual-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .visual-dot {
+            width: 12px;
+            height: 12px;
+            background-color: var(--emerald);
+            border-radius: 50%;
+        }
+        
+        .visual-line {
+            height: 8px;
+            background-color: var(--border-light);
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .visual-line.short { width: 60%; }
+        .visual-line.medium { width: 80%; }
+
+        /* Sections */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            margin-bottom: 48px;
+            max-width: 600px;
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Statistik */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .stat-value {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Kategori */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .category-card {
+            background: var(--surface);
+            padding: 32px 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            border-color: var(--emerald);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-4px);
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .category-card h3 {
+            font-size: 1.1rem;
+        }
+
+        /* Laporan Terbaru */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .report-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .report-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .report-title {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            flex-grow: 1;
+        }
+
+        .report-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 16px;
+            align-self: flex-start;
+        }
+
+        .status-wait { background: #FEF3C7; color: #D97706; }
+        .status-process { background: #DBEAFE; color: #2563EB; }
+        .status-done { background: #D1FAE5; color: #059669; }
+        .status-reject { background: #FEE2E2; color: #DC2626; }
+
+        /* Cara Kerja */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+        }
+
+        /* Garis penghubung horizontal (Desktop) */
+        .steps-grid::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: var(--border-light);
+            z-index: 0;
+        }
+
+        .step-item {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: var(--navy);
+            color: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 0 auto 20px;
+            border: 4px solid var(--bg-warm);
+        }
+
+        .step-item h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .step-item p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--navy);
+            color: var(--surface);
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand h2 {
+            color: var(--surface);
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand p {
+            color: #94A3B8;
+            max-width: 300px;
+        }
+
+        .footer-links h3 {
+            color: var(--surface);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            display: block;
+            color: #94A3B8;
+            margin-bottom: 12px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--emerald);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #1E293B;
+            padding-top: 24px;
+            text-align: center;
+            color: #94A3B8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-content p { margin: 0 auto 32px; }
+            .hero-actions { justify-content: center; flex-direction: column; }
+            .hero-visual { display: none; /* Sembunyikan visual di HP agar tidak sesak */ }
+            
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .steps-grid { grid-template-columns: 1fr; gap: 40px; }
+            .steps-grid::before { display: none; } /* Hilangkan garis horizontal di HP */
+            
+            .footer-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
+            .footer-brand p { margin: 0 auto; }
+        }
+    </style>
 </head>
 <body>
 
     <!-- NAVBAR -->
     <header class="navbar">
         <div class="container navbar-container">
-            <a href="index.html" class="logo">LAPOR<span class="text-primary">IN</span></a>
+            <a href="index.html" class="logo">
+                <span class="logo-dot"></span> LAPORIN
+            </a>
             <nav class="nav-links" id="navbarLinks">
-                <a href="index.html" class="nav-link" style="color: var(--primary-color); font-weight: 700;">Beranda</a>
+                <a href="index.html" class="nav-link active">Beranda</a>
                 <a href="map.html" class="nav-link">Peta</a>
+                <a href="create_report.html" class="nav-link">Buat Laporan</a>
             </nav>
         </div>
     </header>
 
     <!-- HERO SECTION -->
-    <main class="hero">
-        <div class="container hero-content">
-            <span class="badge">Platform Pelaporan Masyarakat</span>
-            <h1 class="hero-title">Suarakan Keluhanmu,<br>Wujudkan Perubahan.</h1>
-            <p class="hero-description">
-                LAPORIN membantu Anda melaporkan permasalahan di lingkungan sekitar, fasilitas umum, dan infrastruktur secara mudah, transparan, dan terpantau.
-            </p>
-            
-            <!-- ID ini akan diubah oleh JavaScript -->
-            <div class="hero-actions" id="heroButtons">
-                <a href="create_report.html" class="btn btn-primary">Buat Laporan</a>
-                <a href="login.html" class="btn btn-outline">Masuk Akun</a>
+    <main>
+        <section class="hero container">
+            <div class="hero-grid">
+                <div class="hero-content reveal">
+                    <h1>Suarakan Keluhanmu,<br>Wujudkan Perubahan.</h1>
+                    <p>LAPORIN adalah platform civic-tech yang membantu Anda melaporkan permasalahan lingkungan, fasilitas umum, dan infrastruktur secara mudah, transparan, dan terpantau.</p>
+                    <div class="hero-actions">
+                        <a href="create_report.html" class="btn btn-primary">Buat Laporan Baru &rarr;</a>
+                        <a href="map.html" class="btn btn-outline">Lihat Peta Laporan</a>
+                    </div>
+                </div>
+                
+                <!-- Visual Asimetris (CSS Only) -->
+                <div class="hero-visual reveal" style="transition-delay: 0.2s;">
+                    <!-- Card 1 -->
+                    <div class="visual-card card-main">
+                        <div class="visual-header">
+                            <div class="visual-dot"></div>
+                            <div style="font-family: var(--font-heading); font-weight: 700; font-size: 0.9rem;">Laporan Terverifikasi</div>
+                        </div>
+                        <div class="visual-line medium"></div>
+                        <div class="visual-line short"></div>
+                        <div class="visual-line medium" style="margin-top: 20px; background-color: #DBEAFE;"></div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="visual-card card-secondary">
+                        <div class="visual-header">
+                            <div class="visual-dot" style="background-color: var(--status-wait);"></div>
+                            <div style="font-family: var(--font-heading); font-weight: 700; font-size: 0.9rem;">Sedang Diproses</div>
+                        </div>
+                        <div class="visual-line medium"></div>
+                        <div class="visual-line short"></div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- STATISTIK -->
+        <section class="section container">
+            <div class="stats-grid">
+                <div class="stat-card reveal">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Total Laporan</div>
+                </div>
+                <div class="stat-card reveal" style="transition-delay: 0.1s;">
+                    <div class="stat-value" id="stat-process">0</div>
+                    <div class="stat-label">Sedang Diproses</div>
+                </div>
+                <div class="stat-card reveal" style="transition-delay: 0.2s;">
+                    <div class="stat-value" id="stat-done">0</div>
+                    <div class="stat-label">Laporan Selesai</div>
+                </div>
+                <div class="stat-card reveal" style="transition-delay: 0.3s;">
+                    <div class="stat-value" id="stat-latest" style="font-size: 1.5rem; padding-top: 10px;">Memuat...</div>
+                    <div class="stat-label">Laporan Terbaru</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KATEGORI -->
+        <section class="section container" style="background-color: var(--surface); border-radius: var(--radius-lg); padding: 60px 40px;">
+            <div class="section-header reveal">
+                <h2>Kategori Laporan</h2>
+                <p>Pilih kategori yang sesuai dengan permasalahan di sekitar Anda.</p>
+            </div>
+            <div class="category-grid">
+                <div class="category-card reveal">
+                    <span class="category-icon">🏗️</span>
+                    <h3>Infrastruktur</h3>
+                </div>
+                <div class="category-card reveal" style="transition-delay: 0.1s;">
+                    <span class="category-icon">🧹</span>
+                    <h3>Kebersihan</h3>
+                </div>
+                <div class="category-card reveal" style="transition-delay: 0.2s;">
+                    <span class="category-icon">🏢</span>
+                    <h3>Fasilitas Umum</h3>
+                </div>
+                <div class="category-card reveal" style="transition-delay: 0.3s;">
+                    <span class="category-icon">🚦</span>
+                    <h3>Lalu Lintas</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- LAPORAN TERBARU -->
+        <section class="section container">
+            <div class="section-header reveal" style="display: flex; justify-content: space-between; align-items: flex-end; max-width: 100%;">
+                <div>
+                    <h2>Laporan Terbaru</h2>
+                    <p>Pantau permasalahan yang baru saja dilaporkan oleh masyarakat.</p>
+                </div>
+                <a href="map.html" class="text-primary" style="font-weight: 700; color: var(--emerald); text-decoration: underline; display: none;">Lihat Semua</a>
+            </div>
+            
+            <div class="reports-grid" id="recent-reports-container">
+                <p class="text-muted">Memuat data laporan...</p>
+            </div>
+        </section>
+
+        <!-- CARA KERJA -->
+        <section class="section container">
+            <div class="section-header text-center reveal" style="margin: 0 auto 60px;">
+                <h2>Bagaimana LAPORIN Bekerja?</h2>
+                <p>Proses pelaporan yang transparan dari awal hingga tuntas.</p>
+            </div>
+            
+            <div class="steps-grid">
+                <div class="step-item reveal">
+                    <div class="step-number">1</div>
+                    <h3>Buat Laporan</h3>
+                    <p>Isi formulir dan lampirkan lokasi kejadian.</p>
+                </div>
+                <div class="step-item reveal" style="transition-delay: 0.1s;">
+                    <div class="step-number">2</div>
+                    <h3>Verifikasi</h3>
+                    <p>Petugas memeriksa validitas laporan Anda.</p>
+                </div>
+                <div class="step-item reveal" style="transition-delay: 0.2s;">
+                    <div class="step-number">3</div>
+                    <h3>Tindak Lanjut</h3>
+                    <p>Laporan diteruskan ke instansi terkait.</p>
+                </div>
+                <div class="step-item reveal" style="transition-delay: 0.3s;">
+                    <div class="step-number" style="background: var(--emerald);">4</div>
+                    <h3>Selesai</h3>
+                    <p>Permasalahan berhasil diselesaikan.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h2>LAPORIN<span style="color: var(--emerald);">.</span></h2>
+                    <p>Platform digital pelaporan masyarakat untuk menciptakan lingkungan yang lebih baik, transparan, dan responsif.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Navigasi</h3>
+                    <a href="index.html">Beranda</a>
+                    <a href="map.html">Peta Laporan</a>
+                    <a href="create_report.html">Buat Laporan</a>
+                </div>
+                <div class="footer-links">
+                    <h3>Bantuan</h3>
+                    <a href="#">Panduan Pengguna</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">Hubungi Kami</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 LAPORIN. Hak Cipta Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Cek apakah ada token di localStorage
+        // --- 1. LOGIKA NAVBAR DINAMIS (AUTH) ---
         const token = localStorage.getItem('access_token');
-        
-        const heroButtons = document.getElementById('heroButtons');
+        const isAdmin = localStorage.getItem('is_admin');
         const navbarLinks = document.getElementById('navbarLinks');
 
         if (token) {
-            // JIKA SUDAH LOGIN: Ubah tombol di beranda
-            heroButtons.innerHTML = `
-                <a href="create_report.html" class="btn btn-primary">Buat Laporan Baru</a>
-                <a href="my-reports.html" class="btn btn-outline">Lihat Laporan Saya</a>
-            `;
-
-            // Tambahkan menu navigasi khusus untuk yang sudah login
-            navbarLinks.innerHTML = `
-                <a href="index.html" class="nav-link" style="color: var(--primary-color); font-weight: 700;">Beranda</a>
-                <a href="map.html" class="nav-link">Peta</a>
-                <a href="create_report.html" class="nav-link">Buat Laporan</a>
+            // Jika login, tambahkan menu Laporan Saya & Keluar
+            let adminMenu = isAdmin === 'true' ? `<a href="admin.html" class="nav-link">Dashboard Admin</a>` : '';
+            navbarLinks.innerHTML += `
                 <a href="my-reports.html" class="nav-link">Laporan Saya</a>
-                <a href="#" class="nav-link" style="color: #dc2626; font-weight: 700;" onclick="logout()">Keluar</a>
+                ${adminMenu}
+                <a href="#" class="nav-link" style="color: #EF4444;" onclick="logout()">Keluar</a>
+            `;
+        } else {
+            // Jika belum login
+            navbarLinks.innerHTML += `
+                <a href="login.html" class="nav-link" style="color: var(--emerald); font-weight: 700;">Masuk / Daftar</a>
             `;
         }
 
-        // Fungsi untuk logout (menghapus token dan kembali ke beranda)
         function logout() {
-            // Konfirmasi sebelum keluar
             if (confirm('Apakah Anda yakin ingin keluar?')) {
                 localStorage.removeItem('access_token');
-                alert('Anda telah berhasil keluar.');
+                localStorage.removeItem('is_admin');
                 window.location.href = 'index.html';
             }
         }
+
+        // --- 2. FETCH DATA STATISTIK & LAPORAN TERBARU ---
+        // Pastikan URL ini sesuai dengan backend Anda (localhost atau URL Render/HF)
+        const API_BASE_URL = 'http://localhost:8000'; 
+
+        async function fetchLandingData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/reports`);
+                if (!response.ok) throw new Error('Gagal mengambil data');
+                
+                const data = await response.json();
+                
+                // A. Hitung Statistik
+                const total = data.length;
+                const process = data.filter(r => r.status === 'Dalam proses' || r.status === 'Diterima').length;
+                const done = data.filter(r => r.status === 'Selesai').length;
+                
+                // Animasi angka sederhana (counting up)
+                document.getElementById('stat-total').innerText = total;
+                document.getElementById('stat-process').innerText = process;
+                document.getElementById('stat-done').innerText = done;
+
+                if (total > 0) {
+                    const latestDate = new Date(data[0].created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                    document.getElementById('stat-latest').innerText = latestDate;
+                } else {
+                    document.getElementById('stat-latest').innerText = '-';
+                }
+
+                // B. Render 3 Laporan Terbaru
+                const reportsContainer = document.getElementById('recent-reports-container');
+                const recentReports = data.slice(0, 3); // Ambil 3 teratas
+
+                if (recentReports.length === 0) {
+                    reportsContainer.innerHTML = '<p class="text-muted">Belum ada laporan.</p>';
+                    return;
+                }
+
+                let html = '';
+                recentReports.forEach(report => {
+                    // Tentukan warna badge status
+                    let badgeClass = 'status-wait';
+                    if (report.status === 'Diterima' || report.status === 'Dalam proses') badgeClass = 'status-process';
+                    if (report.status === 'Selesai') badgeClass = 'status-done';
+                    if (report.status === 'Ditolak') badgeClass = 'status-reject';
+
+                    const date = new Date(report.created_at).toLocaleDateString('id-ID', {
+                        day: 'numeric', month: 'long', year: 'numeric'
+                    });
+
+                    html += `
+                        <div class="report-card reveal">
+                            <div class="report-meta">
+                                <span>${report.kategori}</span>
+                                <span>${date}</span>
+                            </div>
+                            <h3 class="report-title">${report.judul}</h3>
+                            <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 16px;">📍 ${report.lokasi}</p>
+                            <span class="report-status ${badgeClass}">${report.status}</span>
+                        </div>
+                    `;
+                });
+                reportsContainer.innerHTML = html;
+
+                // Panggil ulang fungsi reveal setelah data dimuat (agar tidak invisible)
+                initScrollReveal();
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('recent-reports-container').innerHTML = '<p class="text-muted">Gagal memuat laporan. Pastikan server backend menyala.</p>';
+            }
+        }
+
+        // --- 3. SCROLL REVEAL ANIMATION (Intersection Observer) ---
+        function initScrollReveal() {
+            const reveals = document.querySelectorAll('.reveal');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Hentikan observasi setelah animasi berjalan sekali
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1, // Elemen muncul 10% di layar
+                rootMargin: "0px 0px -50px 0px"
+            });
+
+            reveals.forEach(reveal => {
+                observer.observe(reveal);
+            });
+        }
+
+        // Jalankan saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchLandingData();
+            initScrollReveal(); // Panggil pertama kali untuk elemen statis
+        });
     </script>
 </body>
-</html>
+</html> 
