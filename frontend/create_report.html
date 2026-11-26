@@ -4,71 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buat Laporan - LAPORIN</title>
+    
+    <!-- Fonts & CSS Utama -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    
+
+    <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        .report-container { max-width: 700px; margin: 40px auto; padding: 0 20px; }
-        .report-card { background: var(--white); padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        textarea.form-control { padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; font-family: inherit; outline: none; resize: vertical; min-height: 100px; width: 100%; box-sizing: border-box; }
-        textarea.form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        .input-group-flex { display: flex; gap: 10px; }
-        .input-group-flex .form-group { flex: 1; min-width: 0; }
-        .input-group-flex input { width: 100%; box-sizing: border-box; }
-        input[type="file"] { padding: 10px; border: 1px dashed var(--primary-color); background-color: #eff6ff; border-radius: 8px; width: 100%; box-sizing: border-box; }
-        
-        #map-picker { height: 250px; width: 100%; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 10px; z-index: 1; }
-        .input-readonly { background-color: #f1f5f9; cursor: not-allowed; }
-        
-        /* Tombol GPS */
-        .btn-gps {
-            background-color: #10b981; /* Hijau */
-            color: white;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            padding: 10px 15px;
+        .page-header {
+            padding: 40px 0 20px;
+            text-align: center;
         }
-        .btn-gps:hover { background-color: #059669; }
+
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+        }
+
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            max-width: 700px;
+            margin: 0 auto 60px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        #map-picker {
+            height: 250px;
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            margin-bottom: 16px;
+            z-index: 1;
+        }
+
+        .file-input-wrapper {
+            border: 1px dashed var(--border-light);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            background: #F8FAFC;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-input-wrapper:hover {
+            border-color: var(--emerald);
+            background: #ECFDF5;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .file-label {
+            color: var(--emerald);
+            font-weight: 700;
+            font-family: var(--font-heading);
+            cursor: pointer;
+        }
+
+        .coordinate-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .form-card { padding: 24px; }
+            .coordinate-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- NAVBAR -->
     <header class="navbar">
         <div class="container navbar-container">
-            <a href="index.html" class="logo">LAPOR<span class="text-primary">IN</span></a>
-            <nav class="nav-links">
+            <a href="index.html" class="logo">
+                <span class="logo-dot"></span> LAPORIN
+            </a>
+            <nav class="nav-links" id="navbarLinks">
                 <a href="index.html" class="nav-link">Beranda</a>
-                <a href="map.html" class="nav-link">Peta</a>
-                <a href="create_report.html" class="nav-link" style="color: var(--primary-color); font-weight: 700;">Buat Laporan</a>
+                <a href="map.html" class="nav-link">Peta Laporan</a>
+                <a href="create_report.html" class="nav-link active">Buat Laporan</a>
             </nav>
         </div>
     </header>
 
-    <main class="report-container">
-        <div class="report-card">
-            <div class="auth-header" style="text-align: left; margin-bottom: 20px;">
-                <h1 style="font-size: 1.8rem;">Buat Laporan Baru</h1>
-                <p>Sampaikan permasalahan di sekitar Anda dengan detail.</p>
-            </div>
+    <main class="container">
+        <div class="page-header">
+            <h1>Buat Laporan Baru</h1>
+            <p>Sampaikan permasalahan di sekitar Anda dengan detail dan lokasi yang akurat.</p>
+        </div>
 
-            <form id="reportForm" class="auth-form">
+        <div class="form-card">
+            <form id="reportForm">
                 <div class="form-group">
-                    <label for="judul">Judul Laporan</label>
+                    <label for="judul">Judul Laporan <span style="color: red;">*</span></label>
                     <input type="text" id="judul" placeholder="Contoh: Jalan Berlubang di Depan SD" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="kategori">Kategori</label>
-                    <select id="kategori" class="form-control" style="padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 1rem; width: 100%; box-sizing: border-box;" required>
+                    <label for="kategori">Kategori <span style="color: red;">*</span></label>
+                    <select id="kategori" required>
                         <option value="">-- Pilih Kategori --</option>
                         <option value="Infrastruktur">Infrastruktur</option>
                         <option value="Kebersihan">Kebersihan</option>
@@ -79,30 +129,34 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="deskripsi">Deskripsi Masalah</label>
-                    <textarea id="deskripsi" placeholder="Jelaskan detail permasalahan..." required></textarea>
+                    <label for="deskripsi">Deskripsi Masalah <span style="color: red;">*</span></label>
+                    <textarea id="deskripsi" rows="4" placeholder="Jelaskan detail permasalahan..." required></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="foto">Foto Pendukung (Opsional)</label>
-                    <input type="file" id="foto" accept="image/*">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="foto" accept="image/*">
+                        <label for="foto" class="file-label">📷 Pilih Foto dari Galeri</label>
+                        <p id="file-name" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Belum ada file dipilih</p>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="lokasi">Alamat / Lokasi Kejadian</label>
-                    <input type="text" id="lokasi" placeholder="Klik peta atau gunakan lokasi saat ini" required>
-                </div>
-
-                <!-- PETA INTERAKTIF & TOMBOL GPS -->
-                <div class="form-group">
-                    <label>Titik Lokasi di Peta</label>
-                    <button type="button" id="btnLokasiSaya" class="btn btn-gps">
+                <div class="form-group" style="margin-top: 32px;">
+                    <label>Alamat / Lokasi Kejadian <span style="color: red;">*</span></label>
+                    <button type="button" id="btnLokasiSaya" class="btn btn-primary" style="margin-bottom: 12px; width: auto; padding: 10px 20px; font-size: 0.9rem;">
                         📍 Gunakan Lokasi Saat Ini
                     </button>
-                    <div id="map-picker"></div>
+                    <input type="text" id="lokasi" placeholder="Ketik alamat manual atau gunakan lokasi saat ini" required>
                 </div>
 
-                <div class="input-group-flex">
+                <div class="form-group">
+                    <label>Titik Lokasi di Peta <span style="color: red;">*</span></label>
+                    <div id="map-picker"></div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Klik pada peta untuk menandai lokasi secara presisi.</p>
+                </div>
+
+                <div class="coordinate-grid">
                     <div class="form-group">
                         <label for="latitude">Latitude</label>
                         <input type="text" id="latitude" class="input-readonly" placeholder="Otomatis..." readonly required>
@@ -113,49 +167,78 @@
                     </div>
                 </div>
 
-                <p id="pesanError" style="color: red; font-size: 0.9rem; display: none;"></p>
+                <p id="pesanError" style="color: var(--status-reject); font-size: 0.9rem; display: none; margin-bottom: 16px;"></p>
 
-                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">Kirim Laporan</button>
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 16px;">Kirim Laporan</button>
             </form>
         </div>
     </main>
 
     <script>
+        // --- 1. LOGIKA NAVBAR DINAMIS ---
         const token = localStorage.getItem('access_token');
+        const isAdmin = localStorage.getItem('is_admin');
+        const navbarLinks = document.getElementById('navbarLinks');
+
         if (!token) {
             alert('Anda harus login terlebih dahulu untuk membuat laporan!');
             window.location.href = 'login.html';
         }
 
-        // --- 1. INISIALISASI PETA ---
+        let adminMenu = isAdmin === 'true' ? `<a href="admin.html" class="nav-link">Dashboard</a>` : '';
+        navbarLinks.innerHTML += `
+            <a href="my-reports.html" class="nav-link">Laporan Saya</a>
+            ${adminMenu}
+            <a href="#" class="nav-link" style="color: #EF4444;" onclick="logout()">Keluar</a>
+        `;
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('is_admin');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // --- 2. TAMPILKAN NAMA FILE SAAT DIPILIH ---
+        document.getElementById('foto').addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : 'Belum ada file dipilih';
+            document.getElementById('file-name').innerText = fileName;
+        });
+
+        // --- 3. INISIALISASI PETA ---
         var mapPicker = L.map('map-picker').setView([-2.548926, 118.0148634], 5);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
+            maxZoom: 19, attribution: '© OpenStreetMap'
         }).addTo(mapPicker);
 
         var marker;
 
-        // Fungsi untuk update input dan memindahkan pin
         function updateLocation(lat, lng) {
             document.getElementById('latitude').value = lat;
             document.getElementById('longitude').value = lng;
 
-            if (marker) {
-                mapPicker.removeLayer(marker);
-            }
-            marker = L.marker([lat, lng]).addTo(mapPicker);
-            mapPicker.setView([lat, lng], 16); // Zoom dekat ke lokasi
+            if (marker) mapPicker.removeLayer(marker);
+            
+            // Custom marker
+            var customIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="background-color: var(--emerald); width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            marker = L.marker([lat, lng], { icon: customIcon }).addTo(mapPicker);
+            mapPicker.setView([lat, lng], 16);
         }
 
-        // Event klik peta manual
+        // Event klik peta
         mapPicker.on('click', function(e) {
             updateLocation(e.latlng.lat, e.latlng.lng);
-            // Kosongkan alamat jika user memilih manual agar mereka mengetik sendiri
-            document.getElementById('lokasi').value = ""; 
+            document.getElementById('lokasi').value = ""; // Kosongkan jika pilih manual
         });
 
-        // --- 2. FITUR LOKASI SAAT INI (GPS) & REVERSE GEOCODING ---
+        // --- 4. FITUR GPS ---
         document.getElementById('btnLokasiSaya').addEventListener('click', function() {
             const btn = this;
             btn.innerHTML = "⏳ Mencari lokasi...";
@@ -165,42 +248,38 @@
                 navigator.geolocation.getCurrentPosition(async function(position) {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-
-                    // Pindahkan peta dan isi input koordinat
                     updateLocation(lat, lng);
 
-                    // Minta OpenStreetMap menebak nama alamat (Reverse Geocoding)
                     try {
                         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
                         const data = await response.json();
-                        
-                        // Isi kolom alamat otomatis
                         if (data.display_name) {
                             document.getElementById('lokasi').value = data.display_name;
                         }
                     } catch (error) {
-                        console.log("Gagal mengambil alamat, silakan ketik manual.");
+                        console.log("Gagal mengambil alamat.");
                     }
 
                     btn.innerHTML = "📍 Gunakan Lokasi Saat Ini";
                     btn.disabled = false;
                 }, function(error) {
-                    alert("Gagal mendapatkan lokasi. Pastikan GPS aktif dan izin browser diberikan.");
+                    alert("Gagal mendapatkan lokasi. Pastikan GPS aktif dan izin diberikan.");
                     btn.innerHTML = "📍 Gunakan Lokasi Saat Ini";
                     btn.disabled = false;
                 });
             } else {
-                alert("Browser Anda tidak mendukung fitur lokasi.");
+                alert("Browser tidak mendukung fitur lokasi.");
                 btn.innerHTML = "📍 Gunakan Lokasi Saat Ini";
                 btn.disabled = false;
             }
         });
 
-        // --- 3. LOGIKA KIRIM FORM ---
+        // --- 5. LOGIKA KIRIM FORM ---
         document.getElementById('reportForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
             const pesanError = document.getElementById('pesanError');
+            const btnSubmit = document.querySelector('button[type="submit"]');
             pesanError.style.display = 'none';
 
             if (!document.getElementById('latitude').value) {
@@ -218,12 +297,14 @@
             formData.append('longitude', document.getElementById('longitude').value);
             
             const fileFoto = document.getElementById('foto').files[0];
-            if (fileFoto) {
-                formData.append('foto', fileFoto);
-            }
+            if (fileFoto) formData.append('foto', fileFoto);
+
+            btnSubmit.innerText = 'Mengirim...';
+            btnSubmit.disabled = true;
 
             try {
-                const response = await fetch('https://laporin-production-7ee5268f.up.railway.app/reports', {
+                // Ganti URL jika backend online
+                const response = await fetch('http://localhost:8000/reports', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData 
@@ -232,7 +313,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Laporan berhasil dikirim! Terima kasih.');
+                    alert('Laporan berhasil dikirim!');
                     window.location.href = 'my-reports.html'; 
                 } else if (response.status === 401) {
                     alert('Sesi berakhir. Silakan login kembali.');
@@ -244,7 +325,10 @@
                 }
             } catch (error) {
                 pesanError.style.display = 'block';
-                pesanError.innerText = 'Gagal terhubung ke server. Pastikan Termux menyala.';
+                pesanError.innerText = 'Gagal terhubung ke server. Pastikan backend menyala.';
+            } finally {
+                btnSubmit.innerText = 'Kirim Laporan';
+                btnSubmit.disabled = false;
             }
         });
     </script>
