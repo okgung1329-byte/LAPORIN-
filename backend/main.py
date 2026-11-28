@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import text
 from datetime import datetime
 from typing import List, Optional
 import os, shutil, uuid
@@ -15,7 +16,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="LAPORIN API 2.0")
 
-# Pengaman CORS Mutlak
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,7 +26,6 @@ app.add_middleware(
     max_age=86400
 )
 
-# Menangkap error server agar tidak memutus koneksi browser (Failed to fetch)
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
@@ -34,6 +33,21 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": f"Terjadi kesalahan server: {str(exc)}"},
         headers={"Access-Control-Allow-Origin": "*"}
     )
+
+# --- AUTO MIGRATE UNTUK RAILWAY POSTGRESQL ---
+@app.on_event("startup")
+def auto_migrate_db():
+    try:
+        with engine.connect() as conn:
+            # Menambahkan kolom yang kurang di Railway
+            conn.execute(text("ALTER TABLE reports ADD COLUMN IF NOT EXISTS ticket_number VARCHAR;"))
+            conn.execute(text("ALTER TABLE reports ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT FALSE;"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_reports_ticket_number ON reports (ticket_number);"))
+            conn.commit()
+            print("Migrasi Database Railway: BERHASIL / SUDAH ADA.")
+    except Exception as e:
+        print(f"Info migrasi (abaikan jika SQLite): {e}")
+# ---------------------------------------------
 
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
@@ -138,4 +152,4 @@ def update_report_status(
     db.add(history)
     db.add(notif)
     db.commit()
-    return {"message": "Status berhasil diperbarui"}
+    return {"message": "Status berhasil diperbarui"} 
