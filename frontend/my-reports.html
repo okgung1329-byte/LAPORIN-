@@ -86,6 +86,7 @@
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <script>
+        // URL SUDAH DIGANTI KE RAILWAY
         const API_BASE_URL = 'https://laporin-production-7ee5268f.up.railway.app';
         const token = localStorage.getItem('token');
 
@@ -134,7 +135,6 @@
 
                 const reports = await response.json();
                 
-                // Sembunyikan loading
                 document.getElementById('loadingState').classList.add('hidden');
 
                 if (reports.length === 0) {
