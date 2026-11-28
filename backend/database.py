@@ -3,14 +3,18 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-# Menggunakan SQLite secara default, atau PostgreSQL jika ada DATABASE_URL (seperti di Railway)
+# Ambil URL dari Railway
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./laporin.db")
 
-# Perbaikan khusus untuk SQLite agar bisa berjalan di berbagai thread (FastAPI)
+# Perbaikan URL untuk Railway/PostgreSQL
+if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+elif SQLALCHEMY_DATABASE_URL.startswith("postgresql://"):
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+
+# Konfigurasi Engine
 if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
-    engine = create_engine(
-        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-    )
+    engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 else:
     engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
@@ -18,7 +22,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Fungsi untuk mendapatkan sesi database di setiap request API
 def get_db():
     db = SessionLocal()
     try:
