@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile, F
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from datetime import datetime
 from typing import List, Optional
 import os, shutil, uuid
@@ -14,7 +14,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="LAPORIN API 2.0")
 
-# PERBAIKAN CORS: allow_credentials diubah menjadi False
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -83,27 +82,30 @@ def create_report(
     db.add(history)
     db.add(notif)
     db.commit()
+    
+    # Load relasi pemilik sebelum return agar tidak error 500
     db.refresh(new_report)
+    _ = new_report.pemilik 
+
     return new_report
 
 @app.get("/my-reports", response_model=List[schemas.ReportResponse])
 def get_my_reports(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
-    reports = db.query(models.Report).filter(models.Report.owner_id == current_user.id).order_by(models.Report.created_at.desc()).all()
+    reports = db.query(models.Report).options(joinedload(models.Report.pemilik)).filter(models.Report.owner_id == current_user.id).order_by(models.Report.created_at.desc()).all()
     return reports
 
 @app.get("/reports/{ticket_number}", response_model=schemas.ReportResponse)
 def get_report_by_ticket(ticket_number: str, db: Session = Depends(get_db)):
-    report = db.query(models.Report).filter(models.Report.ticket_number == ticket_number).first()
+    report = db.query(models.Report).options(joinedload(models.Report.pemilik)).filter(models.Report.ticket_number == ticket_number).first()
     if not report:
         raise HTTPException(status_code=404, detail="Laporan tidak ditemukan")
     return report
 
-# --- FITUR ADMIN BARU ---
 @app.get("/admin/reports", response_model=List[schemas.ReportResponse])
 def get_all_reports_admin(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Akses ditolak. Anda bukan admin.")
-    return db.query(models.Report).order_by(models.Report.created_at.desc()).all()
+    return db.query(models.Report).options(joinedload(models.Report.pemilik)).order_by(models.Report.created_at.desc()).all()
 
 @app.put("/admin/reports/{report_id}/status")
 def update_report_status(
@@ -124,4 +126,4 @@ def update_report_status(
     db.add(history)
     db.add(notif)
     db.commit()
-    return {"message": "Status berhasil diperbarui"} 
+    return {"message": "Status berhasil diperbarui"}
