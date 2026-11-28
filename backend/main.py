@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile, Form
+from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime
 from typing import List, Optional
@@ -14,13 +15,25 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="LAPORIN API 2.0")
 
+# Pengaman CORS Mutlak
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=False, 
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=86400
 )
+
+# Menangkap error server agar tidak memutus koneksi browser (Failed to fetch)
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Terjadi kesalahan server: {str(exc)}"},
+        headers={"Access-Control-Allow-Origin": "*"}
+    )
 
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
@@ -58,7 +71,6 @@ def create_report(
     foto: Optional[UploadFile] = File(None), db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)
 ):
     foto_url = None
-    # Memastikan file benar-benar ada dan punya nama sebelum diproses
     if foto and getattr(foto, 'filename', None):
         file_extension = os.path.splitext(foto.filename)[1]
         unique_filename = f"{uuid.uuid4()}{file_extension}"
@@ -84,7 +96,6 @@ def create_report(
     db.add(notif)
     db.commit()
     
-    # Load relasi pemilik agar response schema tidak error
     db.refresh(new_report)
     _ = new_report.pemilik 
 
@@ -127,4 +138,4 @@ def update_report_status(
     db.add(history)
     db.add(notif)
     db.commit()
-    return {"message": "Status berhasil diperbarui"} 
+    return {"message": "Status berhasil diperbarui"}

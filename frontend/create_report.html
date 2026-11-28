@@ -148,6 +148,7 @@
                     alert('Server Error ' + response.status + ': ' + errText);
                 }
             } catch (error) {
+                // Menampilkan pesan error asli
                 alert('Jaringan Error: ' + error.message + ' | Token: ' + (token ? 'Ada' : 'Kosong'));
             } finally {
                 btn.innerHTML = 'Kirim Laporan';
