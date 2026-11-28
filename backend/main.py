@@ -14,10 +14,11 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="LAPORIN API 2.0")
 
+# PERBAIKAN CORS: allow_credentials diubah menjadi False
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False, 
     allow_methods=["*"],
     allow_headers=["*"],
 )
