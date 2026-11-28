@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lacak Laporan - LAPORIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="laporin.css">
+    <style>
+        .track-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; }
+        .search-box input { flex: 1; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 1rem; }
+        .result-card { display: none; }
+        .detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } }
+        .info-row { margin-bottom: 15px; }
+        .info-row span { display: block; font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+        .info-row strong { font-size: 1rem; color: var(--navy); }
+    </style>
+</head>
+<body style="background: var(--bg);">
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">LAPOR<span class="text-primary">IN</span></a>
+            <a href="index.html" class="btn btn-outline btn-sm">Kembali ke Beranda</a>
+        </div>
+    </nav>
+
+    <div class="track-container">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 class="page-title">Lacak Laporan Anda</h1>
+            <p class="page-subtitle">Masukkan nomor tiket (Contoh: LPR-2026-00001) untuk melihat status.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="search-box">
+                <input type="text" id="ticketInput" placeholder="Masukkan Nomor Tiket...">
+                <button class="btn btn-primary" id="searchBtn">Lacak</button>
+            </div>
+            <p id="errorMsg" class="text-danger hidden" style="font-size: 0.9rem;">Laporan tidak ditemukan. Periksa kembali nomor tiket Anda.</p>
+        </div>
+
+        <!-- Hasil Pencarian -->
+        <div id="resultCard" class="result-card">
+            <div class="card" style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div>
+                        <span class="badge badge-primary" id="resTicket">LPR-XXXX-XXXXX</span>
+                        <h2 style="margin-top: 10px; font-size: 1.4rem;" id="resJudul">Judul Laporan</h2>
+                    </div>
+                    <div id="resStatusBadge"></div>
+                </div>
+                
+                <div class="detail-grid">
+                    <div>
+                        <div class="info-row">
+                            <span>Kategori</span>
+                            <strong id="resKategori">-</strong>
+                        </div>
+                        <div class="info-row">
+                            <span>Deskripsi</span>
+                            <p id="resDeskripsi" style="color: var(--text); margin-top: 4px;">-</p>
+                        </div>
+                        <div class="info-row">
+                            <span>Lokasi Kejadian</span>
+                            <strong id="resLokasi">-</strong>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="info-row">
+                            <span>Tanggal Dibuat</span>
+                            <strong id="resTanggal">-</strong>
+                        </div>
+                        <div class="info-row" id="fotoContainer" style="display: none;">
+                            <span>Bukti Foto</span>
+                            <img id="resFoto" src="" alt="Bukti" style="border-radius: 8px; margin-top: 8px; border: 1px solid var(--border);">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Riwayat -->
+            <div class="card">
+                <h3 style="margin-bottom: 20px;">Riwayat Penanganan</h3>
+                <ul class="timeline" id="resTimeline">
+                    <!-- Diisi oleh JS -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://url-railway-anda.up.railway.app';
+        
+        function getStatusBadge(status) {
+            if (status === 'Selesai') return `<span class="badge badge-success">Selesai</span>`;
+            if (status === 'Menunggu verifikasi') return `<span class="badge badge-warning">Menunggu Verifikasi</span>`;
+            if (status === 'Diproses') return `<span class="badge badge-primary">Sedang Diproses</span>`;
+            if (status === 'Ditolak') return `<span class="badge badge-danger">Ditolak</span>`;
+            return `<span class="badge badge-muted">${status}</span>`;
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+
+        document.getElementById('searchBtn').addEventListener('click', async () => {
+            const ticket = document.getElementById('ticketInput').value.trim();
+            if (!ticket) return;
+
+            const btn = document.getElementById('searchBtn');
+            btn.innerText = 'Mencari...';
+            btn.disabled = true;
+            document.getElementById('errorMsg').classList.add('hidden');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/reports/${ticket}`);
+                if (!response.ok) throw new Error('Not found');
+
+                const data = await response.json();
+                
+                // Isi Data
+                document.getElementById('resTicket').innerText = data.ticket_number;
+                document.getElementById('resJudul').innerText = data.judul;
+                document.getElementById('resKategori').innerText = data.kategori;
+                document.getElementById('resDeskripsi').innerText = data.deskripsi;
+                document.getElementById('resLokasi').innerText = data.lokasi;
+                document.getElementById('resTanggal').innerText = formatDate(data.created_at);
+                document.getElementById('resStatusBadge').innerHTML = getStatusBadge(data.status);
+
+                // Foto
+                if (data.foto_url) {
+                    document.getElementById('resFoto').src = `${API_BASE_URL}${data.foto_url}`;
+                    document.getElementById('fotoContainer').style.display = 'block';
+                } else {
+                    document.getElementById('fotoContainer').style.display = 'none';
+                }
+
+                // Timeline
+                const timeline = document.getElementById('resTimeline');
+                timeline.innerHTML = '';
+                if (data.histories && data.histories.length > 0) {
+                    data.histories.forEach((h, index) => {
+                        const isDone = index === 0 ? 'done' : ''; // Bisa disesuaikan logikanya
+                        timeline.innerHTML += `
+                            <li class="timeline-item ${isDone}">
+                                <div style="font-weight: 700; color: var(--navy);">${h.status}</div>
+                                <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">${formatDate(h.created_at)}</div>
+                                <div style="font-size: 0.9rem;">${h.note || ''}</div>
+                            </li>
+                        `;
+                    });
+                } else {
+                    timeline.innerHTML = '<li>Belum ada riwayat.</li>';
+                }
+
+                document.getElementById('resultCard').style.display = 'block';
+
+            } catch (error) {
+                document.getElementById('resultCard').style.display = 'none';
+                document.getElementById('errorMsg').classList.remove('hidden');
+            } finally {
+                btn.innerText = 'Lacak';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 

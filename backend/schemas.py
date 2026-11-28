@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel 
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
-# --- SKEMA PENGGUNA (USER) ---
+# --- USER SCHEMAS ---
 class UserBase(BaseModel):
     nama_lengkap: str
     email: str
@@ -18,36 +18,39 @@ class UserResponse(UserBase):
     class Config:
         from_attributes = True
 
-class UserLogin(BaseModel):
-    email: str
-    password: str
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-# --- SKEMA LAPORAN (REPORT) ---
-class ReportBase(BaseModel):
-    judul: str
-    deskripsi: str
-    kategori: str
-    lokasi: str
-    foto_url: Optional[str] = None
-    latitude: Optional[float] = None # Tambahan untuk peta
-    longitude: Optional[float] = None # Tambahan untuk peta
-
-class ReportCreate(ReportBase):
-    pass
-
-class ReportResponse(ReportBase):
+# --- REPORT SCHEMAS ---
+class ReportHistoryResponse(BaseModel):
     id: int
     status: str
-    owner_id: int
+    note: Optional[str] = None
     created_at: datetime
 
     class Config:
         from_attributes = True
 
-class ReportStatusUpdate(BaseModel):
+class ReportResponse(BaseModel):
+    id: int
+    judul: str
+    deskripsi: str
+    kategori: str
+    lokasi: str
+    foto_url: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     status: str
-    tanggapan_admin: Optional[str] = None 
+    ticket_number: Optional[str] = None
+    is_public: bool
+    created_at: datetime
+    histories: List[ReportHistoryResponse] = []
+    pemilik: UserResponse
+
+    class Config:
+        from_attributes = True
+
+# --- AUTH SCHEMAS ---
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: Optional[str] = None

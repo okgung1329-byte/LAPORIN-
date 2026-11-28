@@ -4,218 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Akun - LAPORIN</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    
-    <style>
-        /* CSS Split-Screen (Sama persis dengan Login) */
-        .auth-split {
-            display: flex;
-            min-height: 100vh;
-            background: var(--bg-warm);
-        }
-        
-        .auth-left {
-            flex: 1;
-            background-color: var(--navy);
-            color: var(--surface);
-            padding: 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .auth-left::before {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: var(--emerald);
-            border-radius: 50%;
-            top: -100px;
-            left: -100px;
-            opacity: 0.2;
-            filter: blur(40px);
-        }
-
-        .auth-left h1 {
-            color: var(--surface);
-            font-size: 3rem;
-            margin-bottom: 24px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .auth-left p {
-            color: #94A3B8;
-            font-size: 1.1rem;
-            max-width: 400px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .auth-right {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
-
-        .auth-form-container {
-            width: 100%;
-            max-width: 420px;
-        }
-
-        .auth-header {
-            margin-bottom: 32px;
-        }
-
-        .auth-header h2 {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-
-        .auth-header p {
-            color: var(--text-muted);
-        }
-
-        .auth-footer {
-            margin-top: 24px;
-            text-align: center;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-        }
-
-        .auth-footer a {
-            color: var(--emerald);
-            font-weight: 700;
-        }
-
-        @media (max-width: 768px) {
-            .auth-split {
-                flex-direction: column;
-            }
-            .auth-left {
-                padding: 40px 24px;
-                text-align: center;
-                align-items: center;
-            }
-            .auth-left h1 { font-size: 2rem; }
-            .auth-right { padding: 40px 24px; }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="laporin.css">
 </head>
-<body>
-
-    <div class="auth-split">
-        <!-- SISI KIRI: BRANDING -->
-        <div class="auth-left">
-            <a href="index.html" class="logo" style="color: white; margin-bottom: 40px; text-decoration: none;">
-                <span class="logo-dot"></span> LAPORIN
-            </a>
-            <h1>Mulai Langkah Kecil untuk Perubahan Besar.</h1>
-            <p>Bergabunglah dengan ribuan masyarakat lainnya. Buat akun Anda dan mulai laporkan permasalahan di lingkungan Anda hari ini.</p>
+<body class="auth-body">
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">LAPOR<span class="text-primary">IN</span></a>
         </div>
+    </nav>
 
-        <!-- SISI KANAN: FORM REGISTER -->
-        <div class="auth-right">
-            <div class="auth-form-container">
-                <div class="auth-header">
-                    <h2>Buat Akun Baru</h2>
-                    <p>Isi data diri Anda untuk mendaftar.</p>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Buat Akun Baru</h1>
+                <p>Bergabunglah untuk mulai melapor</p>
+            </div>
+            
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="nama" required placeholder="Sesuai KTP">
                 </div>
-
-                <form id="registerForm" class="auth-form">
-                    <div class="form-group">
-                        <label for="nama">Nama Lengkap</label>
-                        <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">Alamat Email</label>
-                        <input type="email" id="email" name="email" placeholder="nama@email.com" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Kata Sandi</label>
-                        <input type="password" id="password" name="password" placeholder="Buat kata sandi (min. 8 karakter)" required minlength="8">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="konfirmasi_password">Konfirmasi Kata Sandi</label>
-                        <input type="password" id="konfirmasi_password" name="konfirmasi_password" placeholder="Ulangi kata sandi" required minlength="8">
-                    </div>
-
-                    <p id="pesanError" style="color: red; font-size: 0.9rem; display: none;"></p>
-
-                    <button type="submit" class="btn btn-primary btn-block">Daftar Sekarang</button>
-                </form>
-
-                <div class="auth-footer">
-                    <p>Sudah punya akun? <a href="login.html">Masuk di sini</a></p>
+                <div class="form-group">
+                    <label>Alamat Email</label>
+                    <input type="email" id="email" required placeholder="nama@email.com">
                 </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required placeholder="Buat password yang kuat">
+                </div>
+                <button type="submit" id="registerBtn" class="btn btn-primary btn-block" style="margin-top: 10px;">Daftar Sekarang</button>
+            </form>
+
+            <div class="auth-footer">
+                Sudah punya akun? <a href="login.html">Masuk di sini</a>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('registerForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
+        const API_BASE_URL = 'https://url-railway-anda.up.railway.app';
 
-            const nama = document.getElementById('nama').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const konfirmasi_password = document.getElementById('konfirmasi_password').value;
-            const pesanError = document.getElementById('pesanError');
-            const btnSubmit = document.querySelector('button[type="submit"]');
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('registerBtn');
+            btn.innerHTML = 'Memproses...';
+            btn.disabled = true;
 
-            // Validasi password cocok
-            if (password !== konfirmasi_password) {
-                pesanError.style.display = 'block';
-                pesanError.innerText = 'Kata sandi dan konfirmasi tidak cocok!';
-                return;
-            }
-
-            pesanError.style.display = 'none';
-            
-            // Loading state
-            btnSubmit.innerText = 'Mendaftarkan...';
-            btnSubmit.disabled = true;
+            const data = {
+                nama_lengkap: document.getElementById('nama').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
 
             try {
-                // PENTING: Ganti URL ini jika backend sudah online
-                const response = await fetch('http://localhost:8000/register', {
+                const response = await fetch(`${API_BASE_URL}/register`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        nama_lengkap: nama,
-                        email: email,
-                        password: password
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
                 });
 
-                const data = await response.json();
-
                 if (response.ok) {
-                    alert('Pendaftaran Berhasil! Silakan Login.');
-                    window.location.href = 'login.html'; 
+                    alert('Pendaftaran berhasil! Silakan login.');
+                    window.location.href = 'login.html';
                 } else {
-                    pesanError.style.display = 'block';
-                    pesanError.innerText = data.detail || 'Terjadi kesalahan saat mendaftar.';
+                    const err = await response.json();
+                    alert('Gagal Daftar: ' + (err.detail || 'Email sudah digunakan'));
                 }
             } catch (error) {
-                pesanError.style.display = 'block';
-                pesanError.innerText = 'Gagal terhubung ke server. Pastikan Termux menyala.';
+                alert('Gagal terhubung ke server backend.');
             } finally {
-                btnSubmit.innerText = 'Daftar Sekarang';
-                btnSubmit.disabled = false;
+                btn.innerHTML = 'Daftar Sekarang';
+                btn.disabled = false;
             }
         });
     </script>
