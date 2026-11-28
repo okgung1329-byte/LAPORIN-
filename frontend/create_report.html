@@ -144,12 +144,11 @@
                     document.getElementById('ticketNumber').innerText = data.ticket_number;
                     document.getElementById('successModal').style.display = 'flex';
                 } else {
-                    const err = await response.json();
-                    alert('Gagal mengirim laporan: ' + (err.detail || 'Terjadi kesalahan'));
+                    const errText = await response.text();
+                    alert('Server Error ' + response.status + ': ' + errText);
                 }
             } catch (error) {
-                // Menampilkan pesan error asli dari browser
-                alert('Pesan Error: ' + error.message);
+                alert('Jaringan Error: ' + error.message + ' | Token: ' + (token ? 'Ada' : 'Kosong'));
             } finally {
                 btn.innerHTML = 'Kirim Laporan';
                 btn.disabled = false;
@@ -157,4 +156,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
