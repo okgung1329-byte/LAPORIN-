@@ -90,6 +90,7 @@
     </div>
 
     <script>
+        // URL SUDAH DIGANTI KE RAILWAY
         const API_BASE_URL = 'https://laporin-production-7ee5268f.up.railway.app';
         
         function getStatusBadge(status) {
@@ -142,7 +143,7 @@
                 timeline.innerHTML = '';
                 if (data.histories && data.histories.length > 0) {
                     data.histories.forEach((h, index) => {
-                        const isDone = index === 0 ? 'done' : ''; // Bisa disesuaikan logikanya
+                        const isDone = index === 0 ? 'done' : ''; 
                         timeline.innerHTML += `
                             <li class="timeline-item ${isDone}">
                                 <div style="font-weight: 700; color: var(--navy);">${h.status}</div>
