@@ -90,7 +90,6 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // URL SUDAH DIGANTI KE RAILWAY
         const API_BASE_URL = 'https://laporin-production-7ee5268f.up.railway.app';
         const token = localStorage.getItem('token');
         
@@ -149,7 +148,8 @@
                     alert('Gagal mengirim laporan: ' + (err.detail || 'Terjadi kesalahan'));
                 }
             } catch (error) {
-                alert('Gagal terhubung ke server.');
+                // Menampilkan pesan error asli dari browser
+                alert('Pesan Error: ' + error.message);
             } finally {
                 btn.innerHTML = 'Kirim Laporan';
                 btn.disabled = false;

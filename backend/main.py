@@ -58,7 +58,8 @@ def create_report(
     foto: Optional[UploadFile] = File(None), db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)
 ):
     foto_url = None
-    if foto:
+    # Memastikan file benar-benar ada dan punya nama sebelum diproses
+    if foto and getattr(foto, 'filename', None):
         file_extension = os.path.splitext(foto.filename)[1]
         unique_filename = f"{uuid.uuid4()}{file_extension}"
         file_path = f"uploads/{unique_filename}"
@@ -83,7 +84,7 @@ def create_report(
     db.add(notif)
     db.commit()
     
-    # Load relasi pemilik sebelum return agar tidak error 500
+    # Load relasi pemilik agar response schema tidak error
     db.refresh(new_report)
     _ = new_report.pemilik 
 
@@ -126,4 +127,4 @@ def update_report_status(
     db.add(history)
     db.add(notif)
     db.commit()
-    return {"message": "Status berhasil diperbarui"}
+    return {"message": "Status berhasil diperbarui"} 
